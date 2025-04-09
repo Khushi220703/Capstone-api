@@ -19,20 +19,6 @@ const EcommerceSchema = new mongoose.Schema({
 
 });
 
-EcommerceSchema.pre('save', async function(next){
-     
-    if(!this.isModified('password')) return next(); 
-
-    const saltRounds = parseInt(process.env.SALT,10) || 10;
-    this.password = await bcrypt.hash(this.password, saltRounds);
-});
-
-EcommerceSchema.pre('save', function (next) {
-    this.updatedAt = Date.now();
-    next();
-});
-
-
 const Ecommerce = mongoose.model("Ecommerce",EcommerceSchema);
 
 module.exports = Ecommerce;

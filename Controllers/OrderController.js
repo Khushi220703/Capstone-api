@@ -1,29 +1,34 @@
-const Order = require("../Models/OrderModel");
+const EcommerceOrder = require("../Models/OrderModel");
+const EcommerceCart = require("../Models/CartModel")
 
-// add orders of the user....
+
+
 const addOrders = async (req, res) => {
-    const { userId, items, totalAmount, status, orderDate, shippingAddress, paymentMethod, transactionId } = req.body;
+    const { userId, items, totalAmount, status, orderDate, shippingAddress, paymentMethod, transactionId } = req.body[0];
 
-    
+    console.log(userId, items, totalAmount, status, orderDate, shippingAddress, paymentMethod, transactionId);
+
     if (!userId || !items || !totalAmount || !shippingAddress || !paymentMethod) {
         return res.status(400).send({ message: "All required fields are mandatory!" });
     }
 
     try {
-        
-        const order = new Order({
+        const order = new EcommerceOrder({
             userId,
             items,
             totalAmount,
+            price: totalAmount, // not needed if already using totalAmount
             status: status || "Pending",
-            orderDate: orderDate || new Date(), 
+            orderDate: orderDate || new Date(),
             shippingAddress,
             paymentMethod,
             transactionId,
         });
 
-        
         await order.save();
+
+       
+         await EcommerceCart.deleteMany({ userId });
 
         return res.status(201).send({ message: "Order placed successfully!", data: order });
     } catch (error) {
@@ -31,6 +36,7 @@ const addOrders = async (req, res) => {
         return res.status(500).send({ message: "Server error while placing the order!" });
     }
 };
+
 
 // Fetch all orders for a user....
 const getAllOrders = async (req, res) => {
@@ -41,8 +47,8 @@ const getAllOrders = async (req, res) => {
     }
 
     try {
-      
-        const orders = await Order.find({ userId });
+        const orders = await EcommerceOrder.find({ userId })
+            .populate("items.productId"); // this populates product details
 
         if (!orders || orders.length === 0) {
             return res.status(404).send({ message: "No orders found for the user!" });
@@ -54,5 +60,6 @@ const getAllOrders = async (req, res) => {
         return res.status(500).send({ message: "Server error while fetching orders!" });
     }
 };
+
 
 module.exports = { addOrders, getAllOrders };

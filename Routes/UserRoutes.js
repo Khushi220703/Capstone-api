@@ -4,6 +4,6 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/register", generateToken, registerUser); // signup route
-router.post("/login", userAuthentication, loginUser); // login route
+router.post("/login", loginUser); // login route
 
 module.exports = router;

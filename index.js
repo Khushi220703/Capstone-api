@@ -8,7 +8,7 @@ const connection = require("./Configs/DbConfig");
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
-
+app.use(cors());
 // connecting to the mongodb.
 connection();
 

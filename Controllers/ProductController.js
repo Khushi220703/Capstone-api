@@ -67,4 +67,50 @@ const getProducts = async (req, res) => {
     }
 };
 
-module.exports = { addProduct, getProducts };
+const getProductById = async (req, res) => {
+ 
+  let {id} = req.params;
+  id = id.replaceAll(":","");
+
+  try {
+      const products = await Product.find({_id:id});
+
+      if (!products || products.length === 0) {
+          return res.status(404).send({ message: "No products found." });
+      }
+
+      return res.status(200).send(products);
+  } catch (error) {
+      console.error("Error fetching products:", error.message);
+      return res.status(500).send({ message: "There is an error from the server side." });
+  }
+};
+
+
+const getProductCategory = async (req, res) => {
+    try {
+      const products = await Product.aggregate([
+        {
+          $group: {
+            _id: "$category", 
+            product: { $first: "$$ROOT" } 
+          }
+        },
+        {
+          $project: {
+            _id: 0, 
+            category: "$_id",
+            imageUrl: { $arrayElemAt: ["$product.imageUrl", 0] } 
+          }
+        }
+      ]);
+  
+      res.status(200).send(products);
+    } catch (error) {
+      console.error("Error fetching products:", error.message);
+      return res.status(500).send({ message: "There is an error from the server side." });
+    }
+  };
+  
+  
+module.exports = { addProduct, getProducts, getProductById,getProductCategory };

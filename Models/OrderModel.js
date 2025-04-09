@@ -13,15 +13,17 @@ const OrderSchema = new mongoose.Schema({
                 ref: "Product",
                 required: true,
             },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1,
-            },
-            price: {
-                type: Number,
-                required: true,
-            },
+            title: String,
+            imageUrl: [String],
+            price: Number,
+            quantity: Number,
+            brandName: String,
+            category: String,
+            availableColors: [String],
+            availableSizes: [String],
+            materials: [String],
+            features: [String],
+            description: String,
         },
     ],
     totalAmount: {
@@ -38,26 +40,8 @@ const OrderSchema = new mongoose.Schema({
         default: Date.now,
     },
     shippingAddress: {
-        street: {
-            type: String,
-            required: true,
-        },
-        city: {
-            type: String,
-            required: true,
-        },
-        state: {
-            type: String,
-            required: true,
-        },
-        zipCode: {
-            type: String,
-            required: true,
-        },
-        country: {
-            type: String,
-            required: true,
-        },
+        type: String, // 🔥 simple string instead of object
+        required: true,
     },
     paymentMethod: {
         type: String,
@@ -69,9 +53,9 @@ const OrderSchema = new mongoose.Schema({
         default: null,
     },
 }, {
-    timestamps: true, 
+    timestamps: true,
 });
 
-const Order = mongoose.model("Order", OrderSchema);
+const EcommerceOrder = mongoose.model("EcommerceOrder", OrderSchema);
 
-module.exports = Order;
+module.exports = EcommerceOrder;
